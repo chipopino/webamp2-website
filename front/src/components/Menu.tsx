@@ -2,6 +2,7 @@ import React, { ReactNode, useState } from 'react';
 import useCtx from 'components/Context';
 import Btn from 'components/Btn';
 import { cn } from 'methodes/global';
+import { get } from 'methodes/fetch';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -9,7 +10,13 @@ export default function Menu() {
     const ctx = useCtx();
 
     const skinBtns = {
-        'random skin': () => console.log("POOP"),
+        'random skin': () => {
+            get('randomSkin').then(e => {
+                //@ts-ignore
+                console.log(ctx.webamp.current)
+                // ctx.webamp.current.setSkinFromUrl(e)
+            })
+        },
         'save skin': () => console.log("POOP"),
         'load skin': () => console.log("POOP"),
         'delete current skin': () => console.log("POOP"),

@@ -1,8 +1,9 @@
-import React, { createContext, useState, ReactNode, Dispatch, SetStateAction, useContext } from 'react';
+import React, { createContext, useState, ReactNode, useContext, useRef } from 'react';
 
 type modalStateType = null | ReactNode;
 
 interface contextType {
+    webamp: any;
     isModalOpen: Boolean;
     modalContent: modalStateType;
     setModalContent: (content: ReactNode) => void;
@@ -14,7 +15,8 @@ export function ContextPriveder({ children }: { children: ReactNode }) {
 
     const [isModalOpen, setIsModalOpen] = useState<Boolean>(false);
     const [modalContent, _setModalContent] = useState<modalStateType>(null);
-
+    const webamp = useRef();
+    
     function setModalContent(content: ReactNode) {
         if (content) {
             setIsModalOpen(true);
@@ -28,7 +30,7 @@ export function ContextPriveder({ children }: { children: ReactNode }) {
     }
 
     return (
-        <Context.Provider value={{ isModalOpen, modalContent, setModalContent }}>
+        <Context.Provider value={{ isModalOpen, modalContent, setModalContent, webamp }}>
             {children}
         </Context.Provider>
     );

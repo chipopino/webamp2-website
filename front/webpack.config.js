@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -26,7 +27,13 @@ const config = {
     new HtmlWebpackPlugin({
       template: d_src('index.html'),
       filename: 'index.html'
-    })
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: d_src('webamp/webamp.html'), to: d_dist() },
+        { from: d_src('webamp/webamp.js'), to: d_dist() },
+      ],
+    }),
   ],
   module: {
     rules: [
@@ -46,8 +53,8 @@ const config = {
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'], 
-    alias:{
+    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
       root: d_root(),
       src: d_src(),
       components: d_components(),
