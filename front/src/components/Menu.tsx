@@ -5,19 +5,29 @@ import { cn } from 'methodes/global';
 import { get } from 'methodes/fetch';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
+import { larr, lget, lset } from 'methodes/localStorage';
 
 export default function Menu() {
     const ctx = useCtx();
+
+    function exec(task: 'setRandomSkin', data: any) {
+        const postMessage = ctx?.postMessage?.current;
+        postMessage({ task, data }, '*');
+    }
 
     const skinBtns = {
         'random skin': () => {
             get('randomSkin').then(e => {
                 //@ts-ignore
-                console.log(ctx.webamp.current)
-                // ctx.webamp.current.setSkinFromUrl(e)
+                const skin: string = e.skin;
+                exec('setRandomSkin', skin);
+                lset('currentSkin', skin);
             })
         },
-        'save skin': () => console.log("POOP"),
+        'save skin': () => {
+            larr.push('skins', lget('currentSkin'));
+            larr.uniquefy('skins');
+        },
         'load skin': () => console.log("POOP"),
         'delete current skin': () => console.log("POOP"),
     }

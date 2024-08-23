@@ -52,6 +52,20 @@ window.addEventListener('resize', () => {
     resizeWinamp();
 })
 
+window.addEventListener('message', function (event) {
+    // Check the origin of the message for security purposes
+    // if (event.origin !== 'http://localhost:3000') { // Replace with the parent window's origin
+    //     return;
+    // } TODO
+    const { task, data } = event.data;
+
+    switch (task) {
+        case "setRandomSkin":
+            console.log("RRRRRRRRR", task, data);
+            // webamp.setSkinFromUrl(data);
+            break;
+    }
+});
 
 
 
