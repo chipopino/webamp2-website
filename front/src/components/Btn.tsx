@@ -19,7 +19,14 @@ export default function Btn(props: btnType) {
                 (isT && props.isDelayClick) ? setTimeout(onClick, 200) :
                     onClick();
             }}
-            className={cn(props.className, "bg-blue-500 text-white py-2 px-4 rounded transition-colors duration-300 active:bg-blue-700")}
+            className={cn(
+                props.className,
+                "bg-primary text-white",
+                "py-2 px-4 rounded",
+                "transition-colors duration-300",
+                "active:bg-blue-700",
+                "break-all",
+            )}
         >
             {props.children}
         </Button>

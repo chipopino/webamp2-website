@@ -19,15 +19,27 @@ export const larr = {
         lset(key, arr);
     },
     uniquefy: (key: localStorageKeyType) => {
-        const arr = lget(key) || [];
-        
-        lset(key, arr.reduce((acc: any, elm: any) => {
+        let arr = lget(key) || [];
+        arr = arr.map((e: any) => JSON.stringify(e));
+
+        const tmp = arr.reduce((acc: any, elm: any) => {
             if (!acc.includes(elm)) {
                 acc.push(elm);
             }
             return acc;
-        }, []))
+        }, [])
 
+        lset(key, tmp.map((e: any) => JSON.parse(e)));
+    },
+    delete: (key: localStorageKeyType, value: any) => {
+        const arr = lget(key) || [];
+
+        lset(key, arr.reduce((acc: any, elm: any) => {
+            if (JSON.stringify(elm) !== JSON.stringify(value)) {
+                acc.push(elm);
+            }
+            return acc;
+        }, []))
     }
 }
 

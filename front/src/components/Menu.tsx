@@ -7,10 +7,33 @@ import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import { larr, lget, lset } from 'methodes/localStorage';
 
+type taskType = 'setRandomSkin';
+
+function PickSkin({ skins, exec, close }:
+    {
+        skins: { name: string, url: string }[],
+        exec: (type: taskType, data: any) => void,
+        close: () => void,
+    }
+) {
+    return <div className='flex flex-col gap-2'>
+        {skins.map(e =>
+            <Btn
+                onClick={() => {
+                    exec('setRandomSkin', e.url);
+                    close();
+                }}
+            >
+                {e.name}
+            </Btn>
+        )}
+    </div>
+}
+
 export default function Menu() {
     const ctx = useCtx();
 
-    function exec(task: 'setRandomSkin', data: any) {
+    function exec(task: taskType, data: any) {
         const postMessage = ctx?.postMessage?.current;
         postMessage({ task, data }, '*');
     }
@@ -19,17 +42,39 @@ export default function Menu() {
         'random skin': () => {
             get('randomSkin').then(e => {
                 //@ts-ignore
-                const skin: string = e.skin;
+                const skin: string = e.skin?.replace?.('\n', '');
                 exec('setRandomSkin', skin);
-                lset('currentSkin', skin);
+                const match = skin.match(/(?<=\/\/).+(?=\.(wsz|zip))/);
+                if (match && match.length) {
+                    const tmp = match[0].split?.('/');
+                    if (tmp) {
+                        lset(
+                            'currentSkin',
+                            {
+                                name: tmp[tmp.length - 1]?.replace?.(/_/g, ''),
+                                url: skin
+                            }
+                        );
+                    }
+                }
             })
         },
         'save skin': () => {
             larr.push('skins', lget('currentSkin'));
             larr.uniquefy('skins');
         },
-        'load skin': () => console.log("POOP"),
-        'delete current skin': () => console.log("POOP"),
+        'load skin': () => {
+            ctx?.setModalContent(
+                <PickSkin
+                    skins={lget('skins')}
+                    exec={exec}
+                    close={() => ctx.setModalContent(null)}
+                />
+            );
+        },
+        'delete current skin': () => {
+            larr.delete('skins', lget('currentSkin'));
+        },
     }
     const searchBtns = {
         'search radio stations': () => console.log("POOP"),
