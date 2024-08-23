@@ -1,3 +1,4 @@
+import { jcompare } from "methodes/global";
 
 type localStorageKeyType = 'saveSkin' | 'currentSkin' | 'skins';
 
@@ -35,7 +36,7 @@ export const larr = {
         const arr = lget(key) || [];
 
         lset(key, arr.reduce((acc: any, elm: any) => {
-            if (JSON.stringify(elm) !== JSON.stringify(value)) {
+            if (jcompare(elm, value)) {
                 acc.push(elm);
             }
             return acc;

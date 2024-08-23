@@ -7,3 +7,7 @@ export const isT =
 export function cn(...args: (string | undefined | boolean)[]) {
     return classNames(...args);
 }
+
+export function jcompare(elm1: any, elm2: any) {
+    return JSON.stringify(elm1) === JSON.stringify(elm2);
+}

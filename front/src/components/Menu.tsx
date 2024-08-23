@@ -1,31 +1,57 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import useCtx from 'components/Context';
 import Btn from 'components/Btn';
-import { cn } from 'methodes/global';
+import { cn, jcompare } from 'methodes/global';
 import { get } from 'methodes/fetch';
+import { larr, lget, lset } from 'methodes/localStorage';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
-import { larr, lget, lset } from 'methodes/localStorage';
+import ClearIcon from '@mui/icons-material/Clear';
 
 type taskType = 'setRandomSkin';
 
 function PickSkin({ skins, exec, close }:
     {
-        skins: { name: string, url: string }[],
-        exec: (type: taskType, data: any) => void,
-        close: () => void,
+        skins: { name: string, url: string }[];
+        exec: (type: taskType, data: any) => void;
+        close: () => void;
     }
 ) {
-    return <div className='flex flex-col gap-2'>
-        {skins.map(e =>
-            <Btn
-                onClick={() => {
-                    exec('setRandomSkin', e.url);
-                    close();
-                }}
+    const ctx = useCtx();
+    const [sk, setSk] = useState(skins);
+
+    return <div className='flex flex-col gap-2 w-full'>
+        {sk.map((skin, i) =>
+            <div
+                key={`k_dffhgjsjf_${i}`}
+                className='w-full flex gap-2 items-center justify-center'
             >
-                {e.name}
-            </Btn>
+                <Btn
+                    className='w-full'
+                    onClick={() => {
+                        lset('currentSkin', skin);
+                        exec('setRandomSkin', skin.url);
+                        close();
+                    }}
+                >
+                    {skin.name}
+                </Btn>
+                <Btn
+                    onClick={() => {
+
+                        if (sk.length === 1) {
+                            ctx?.setModalContent(null);
+                        }
+                        setSk(old => {
+                            const tmp = old.filter(e =>
+                                e.name !== skin.name
+                            )
+                        })
+                    }}
+                >
+                    <ClearIcon />
+                </Btn>
+            </div>
         )}
     </div>
 }
@@ -38,26 +64,30 @@ export default function Menu() {
         postMessage({ task, data }, '*');
     }
 
+    function getRandomSkin() {
+        get('randomSkin').then(e => {
+            //@ts-ignore
+            const skin: string = e.skin?.replace?.('\n', '');
+            exec('setRandomSkin', skin);
+            const match = skin.match(/(?<=\/\/).+(?=\.(wsz|zip))/);
+            if (match && match.length) {
+                const tmp = match[0].split?.('/');
+                if (tmp) {
+                    lset(
+                        'currentSkin',
+                        {
+                            name: tmp[tmp.length - 1]?.replace?.(/_/g, ''),
+                            url: skin
+                        }
+                    );
+                }
+            }
+        })
+    }
+
     const skinBtns = {
         'random skin': () => {
-            get('randomSkin').then(e => {
-                //@ts-ignore
-                const skin: string = e.skin?.replace?.('\n', '');
-                exec('setRandomSkin', skin);
-                const match = skin.match(/(?<=\/\/).+(?=\.(wsz|zip))/);
-                if (match && match.length) {
-                    const tmp = match[0].split?.('/');
-                    if (tmp) {
-                        lset(
-                            'currentSkin',
-                            {
-                                name: tmp[tmp.length - 1]?.replace?.(/_/g, ''),
-                                url: skin
-                            }
-                        );
-                    }
-                }
-            })
+            getRandomSkin();
         },
         'save skin': () => {
             larr.push('skins', lget('currentSkin'));
@@ -74,6 +104,7 @@ export default function Menu() {
         },
         'delete current skin': () => {
             larr.delete('skins', lget('currentSkin'));
+            lset('currentSkin', '')
         },
     }
     const searchBtns = {
@@ -85,6 +116,15 @@ export default function Menu() {
         'flex flex-col flex-wrap justify-center gap-2',
         'overflow-y-auto'
     )
+
+    useEffect(() => {
+        const tmp = lget('currentSkin');
+        if (tmp) {
+            setTimeout(() => {
+                exec('setRandomSkin', tmp.url);
+            }, 1000);
+        }
+    }, [])
 
     const skinMenuJsx = <div className={cn(cnModal)}>
         {Object.keys(skinBtns).map(k =>

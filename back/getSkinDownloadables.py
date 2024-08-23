@@ -18,7 +18,7 @@ def getDownloadables(identifier):
     if not meta:
         print("ERROR", identifier)
         with open('errors.txt', 'a') as errfile:
-            errfile.write(f"Error1 {errors}: {identifier}\n\n\n")
+            errfile.write(f"Error1 no meta: {identifier}\n\n\n")
             errors += 1 
 
     files = []
@@ -36,7 +36,7 @@ def getDownloadables(identifier):
 with open('skins.txt', 'r') as file:
     for line_number, line in enumerate(file, start=1):
         try:
-            if(line_number > -1):
+            if(line_number > 11382):
                 skin = line.strip()
                 item = getDownloadables(skin)
                 if len(item):
