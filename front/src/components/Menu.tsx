@@ -7,8 +7,9 @@ import { larr, lget, lset } from 'methodes/localStorage';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import ClearIcon from '@mui/icons-material/Clear';
+import { RadioBrowserApi, StationSearchType } from 'radio-browser-api'
 
-type taskType = 'setRandomSkin';
+type taskType = 'setRandomSkin' | 'setTraks';
 
 function PickSkin({ skins, exec, close }:
     {
@@ -60,6 +61,7 @@ function PickSkin({ skins, exec, close }:
 
 export default function Menu() {
     const ctx = useCtx();
+    const radioBrowser = new RadioBrowserApi('My Radio App')
 
     function exec(task: taskType, data: any) {
         const postMessage = ctx?.postMessage?.current;
@@ -86,7 +88,7 @@ export default function Menu() {
                     }
                 }
             })
-            .catch(err=>window.alert('could not fetch skin'))
+            .catch(err => window.alert('could not fetch skin'))
     }
 
     const skinBtns = {
@@ -114,8 +116,19 @@ export default function Menu() {
         },
     }
     const searchBtns = {
-        'search radio stations': () => console.log("POOP"),
         'search archives': () => console.log("POOP"),
+        'search radio by tag': async () => {
+            const tmp = await radioBrowser.getStationsBy(
+                StationSearchType.byTag, window.prompt('enter search term') || '')
+            const stations = tmp.map(e => {
+                return {
+                    name: e.name,
+                    url: e.urlResolved,
+                }
+            });
+            exec('setTraks', stations);
+            ctx?.setModalContent(null);
+        }
     }
 
     const cnModal = cn(
@@ -124,7 +137,7 @@ export default function Menu() {
     )
 
     useEffect(() => {
-        const tmp = lget('currentSkin');
+        const tmp = lget('defaultSkin');
         if (tmp) {
             setTimeout(() => {
                 exec('setRandomSkin', tmp.url);

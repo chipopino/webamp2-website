@@ -61,9 +61,11 @@ window.addEventListener('message', function (event) {
 
     switch (task) {
         case "setRandomSkin":
-            console.log("QQQQQQQQQ",data)
             webamp.setSkinFromUrl(data);
-            break;           
+            break;
+        case "setTraks":
+            webamp.setTracksToPlay(data);
+            break;       
     }
 });
 
