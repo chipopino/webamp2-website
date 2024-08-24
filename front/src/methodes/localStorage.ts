@@ -1,6 +1,6 @@
 import { jcompare } from "methodes/global";
 
-type localStorageKeyType = 'saveSkin' | 'currentSkin' | 'skins';
+type localStorageKeyType = 'saveSkin' | 'currentSkin' | 'skins' | 'defaultSkin';
 
 export function lget(key: localStorageKeyType) {
     const val = localStorage.getItem(key);

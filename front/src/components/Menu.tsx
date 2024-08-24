@@ -37,19 +37,21 @@ function PickSkin({ skins, exec, close }:
                     {skin.name}
                 </Btn>
                 <Btn
+                    className='!bg-transparent !w-fit !p-0 !m-0'
                     onClick={() => {
-
                         if (sk.length === 1) {
                             ctx?.setModalContent(null);
                         }
                         setSk(old => {
-                            const tmp = old.filter(e =>
+                            const tmp = old.filter((e: any) =>
                                 e.name !== skin.name
                             )
+                            lset('skins', tmp);
+                            return tmp;
                         })
                     }}
                 >
-                    <ClearIcon />
+                    <ClearIcon className='text-black' />
                 </Btn>
             </div>
         )}
@@ -65,33 +67,37 @@ export default function Menu() {
     }
 
     function getRandomSkin() {
-        get('randomSkin').then(e => {
-            //@ts-ignore
-            const skin: string = e.skin?.replace?.('\n', '');
-            exec('setRandomSkin', skin);
-            const match = skin.match(/(?<=\/\/).+(?=\.(wsz|zip))/);
-            if (match && match.length) {
-                const tmp = match[0].split?.('/');
-                if (tmp) {
-                    lset(
-                        'currentSkin',
-                        {
-                            name: tmp[tmp.length - 1]?.replace?.(/_/g, ''),
-                            url: skin
-                        }
-                    );
+        get('randomSkin')
+            .then(e => {
+                //@ts-ignore
+                const skin: string = e.skin?.replace?.('\n', '');
+                exec('setRandomSkin', skin);
+                const match = skin.match(/(?<=\/\/).+(?=\.(wsz|zip))/);
+                if (match && match.length) {
+                    const tmp = match[0].split?.('/');
+                    if (tmp) {
+                        lset(
+                            'currentSkin',
+                            {
+                                name: tmp[tmp.length - 1]?.replace?.(/_/g, ''),
+                                url: skin
+                            }
+                        );
+                    }
                 }
-            }
-        })
+            })
+            .catch(err=>window.alert('could not fetch skin'))
     }
 
     const skinBtns = {
         'random skin': () => {
             getRandomSkin();
+            ctx?.setModalContent(null);
         },
         'save skin': () => {
             larr.push('skins', lget('currentSkin'));
             larr.uniquefy('skins');
+            ctx?.setModalContent(null);
         },
         'load skin': () => {
             ctx?.setModalContent(
@@ -102,9 +108,9 @@ export default function Menu() {
                 />
             );
         },
-        'delete current skin': () => {
-            larr.delete('skins', lget('currentSkin'));
-            lset('currentSkin', '')
+        'set this skin as default': () => {
+            lset('defaultSkin', lget('currentSkin'));
+            ctx?.setModalContent(null);
         },
     }
     const searchBtns = {
