@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import useCtx from 'components/Context';
 import Btn from 'components/Btn';
 import { cn, jcompare } from 'methodes/global';
-import { get } from 'methodes/fetch';
+import { get, post } from 'methodes/fetch';
 import { larr, lget, lset } from 'methodes/localStorage';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
@@ -102,13 +102,15 @@ export default function Menu() {
             ctx?.setModalContent(null);
         },
         'load skin': () => {
-            ctx?.setModalContent(
-                <PickSkin
-                    skins={lget('skins')}
-                    exec={exec}
-                    close={() => ctx.setModalContent(null)}
-                />
-            );
+            if (lget('skins') && lget('skins')?.length > 0) {
+                ctx?.setModalContent(
+                    <PickSkin
+                        skins={lget('skins')}
+                        exec={exec}
+                        close={() => ctx.setModalContent(null)}
+                    />
+                );
+            }
         },
         'set this skin as default': () => {
             lset('defaultSkin', lget('currentSkin'));
@@ -116,17 +118,39 @@ export default function Menu() {
         },
     }
     const searchBtns = {
-        'search archives': () => console.log("POOP"),
+        'search archives': () => {
+            const searchTerm = window.prompt('enter search term') || '';
+            if (searchTerm) {
+                post('searchIA', searchTerm)
+                    .then(result => {
+                        const res = result as any;
+                        console.log(res)
+                        exec('setTraks', res.traks);
+                    })
+                    .catch(err => window.alert('bummer'))
+            }
+            ctx?.setModalContent(null);
+        },
         'search radio by tag': async () => {
-            const tmp = await radioBrowser.getStationsBy(
-                StationSearchType.byTag, window.prompt('enter search term') || '')
-            const stations = tmp.map(e => {
-                return {
-                    name: e.name,
-                    url: e.urlResolved,
-                }
-            });
-            exec('setTraks', stations);
+            const searchTerm = window.prompt('enter search term') || '';
+            if (searchTerm) {
+                const tmp = await radioBrowser.getStationsBy(
+                    StationSearchType.byTag, searchTerm
+                ) || [];
+
+                const stations = tmp.map(e => {
+                    return {
+                        name: e.name,
+                        url: e.urlResolved,
+                        duration: 0,
+                        metaData: {
+                            artist: e.name,
+                            title: e.country,
+                        },
+                    }
+                });
+                exec('setTraks', stations);
+            }
             ctx?.setModalContent(null);
         }
     }

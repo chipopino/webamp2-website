@@ -2,7 +2,8 @@ from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
 import random
 import requests
-
+from searchArchives import searchIA
+ 
 # https://archive.org/download/winampskin_Abandoned_Pools_Robot/Abandoned_Pools_-_Robot.wsz
 
 def get(url):
@@ -28,10 +29,16 @@ def randomSkin():
         file.readline()
         return {'skin': file.readline()}
 
+@app.route('/searchIA', methods=['POST'])
+def searchIArout():
+    data = request.json
+    return jsonify(searchIA(data))
+
+
 @app.route('/test', methods=['POST'])
 def post_data():
-    data = request.json  # Get JSON data from the request
-    return jsonify(data)  # Echo the received data back
+    data = request.json
+    return jsonify(data)
 
 
 if __name__ == '__main__':
