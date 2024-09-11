@@ -8,7 +8,7 @@ import './index.css';
 
 const App: React.FC = () => {
 
-  return <div className='overflow-hidden w-screen h-screen flex flex-col'>
+  return <div className='overflow-hidden w-full h-full flex flex-col'>
     <ContextPriveder>
       <Webamp2 />
       <Menu />
