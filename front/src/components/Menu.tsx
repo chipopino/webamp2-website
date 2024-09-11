@@ -1,13 +1,14 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import useCtx from 'components/Context';
 import Btn from 'components/Btn';
 import { cn, jcompare } from 'methodes/global';
 import { get, post } from 'methodes/fetch';
 import { larr, lget, lset } from 'methodes/localStorage';
+import { RadioBrowserApi, StationSearchType } from 'radio-browser-api'
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import ClearIcon from '@mui/icons-material/Clear';
-import { RadioBrowserApi, StationSearchType } from 'radio-browser-api'
+import SaveIcon from '@mui/icons-material/Save';
 
 type taskType = 'setRandomSkin' | 'setTraks';
 
@@ -91,6 +92,19 @@ export default function Menu() {
             .catch(err => window.alert('could not fetch skin'))
     }
 
+    function downloadFile() {
+        const tracks = lget('tracks');
+        const skins = lget('skins');
+        const fin = JSON.stringify({tracks, skins});
+
+        const blob = new Blob([fin], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "bacup.json";
+        link.click();
+      }
+
+
     const skinBtns = {
         'random skin': () => {
             getRandomSkin();
@@ -124,8 +138,8 @@ export default function Menu() {
                 post('searchIA', searchTerm)
                     .then(result => {
                         const res = result as any;
-                        console.log(res)
                         exec('setTraks', res.traks);
+                        lset('currentTracks', res.traks);
                     })
                     .catch(err => window.alert('bummer'))
             }
@@ -150,9 +164,46 @@ export default function Menu() {
                     }
                 });
                 exec('setTraks', stations);
+                lset('currentTracks', stations);
             }
             ctx?.setModalContent(null);
         }
+    }
+
+    const saveBtns = {
+        'save current track': () => {
+            const tmp = lget('currentTrack');
+            if (tmp) {
+                larr.push('tracks', tmp);
+            } else {
+                window.alert('i am discombabulated indeed')
+            }
+            ctx?.setModalContent(null);
+        },
+        'load saved traks': () => {
+            lset('currentTracks', lget('tracks'));
+            exec('setTraks', lget('tracks'));
+            ctx?.setModalContent(null);
+        },
+        'delete trak': () => {
+            try {
+                const tracks = lget('tracks');
+                const currentTrackUrl = lget('currentTrack').url;
+                if (tracks && tracks.length) {
+                    //@ts-ignore
+                    const tmp = tracks.filter(e => e.url !== currentTrackUrl);
+                    lset('tracks', tmp);
+                    exec('setTraks', lget('tracks'));
+                }
+            } catch {
+                window.alert('la la la that didnt work')
+            }
+            ctx?.setModalContent(null);
+        },
+        'export my stuff': () => {
+            downloadFile();
+            ctx?.setModalContent(null);
+        },
     }
 
     const cnModal = cn(
@@ -167,6 +218,20 @@ export default function Menu() {
                 exec('setRandomSkin', tmp.url);
             }, 1000);
         }
+
+        window.addEventListener("message", function (event) {
+            const { url } = event?.data || {};
+            if (url) {
+                try {
+                    //@ts-ignore
+                    const tmp = lget('currentTracks').filter(e => e.url === url);
+                    lset('currentTrack', tmp[0]);
+                } catch {
+                    window.alert('i like pie <3');
+                }
+            }
+        });
+
     }, [])
 
     const skinMenuJsx = <div className={cn(cnModal)}>
@@ -183,6 +248,13 @@ export default function Menu() {
         )}
     </div>
 
+    const saveMenuJsx = <div className={cnModal}>
+        {Object.keys(saveBtns).map(k =>
+            // @ts-ignore
+            <Btn onClick={saveBtns[k]} key={`btn_k_${k}`}>{k}</Btn>
+        )}
+    </div>
+
     const mdMenuJsx = <div className='flex w-full justify-right p-2 gap-2'>
         <Btn
             className='w-full'
@@ -195,6 +267,12 @@ export default function Menu() {
             onClick={() => ctx?.setModalContent(searchMenuJsx)}
         >
             <SearchIcon />
+        </Btn>
+        <Btn
+            className='w-full'
+            onClick={() => ctx?.setModalContent(saveMenuJsx)}
+        >
+            <SaveIcon />
         </Btn>
     </div>
 

@@ -69,6 +69,9 @@ window.addEventListener('message', function (event) {
     }
 });
 
+const unsubscribe = webamp.onTrackDidChange((track) => {
+    window.parent.postMessage(track, "*");
+});
 
 
 // webamp.setSkinFromUrl('https://archive.org/download/winampskins_Bidibidi/Bidibidi.wsz');
