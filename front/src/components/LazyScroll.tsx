@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import LazyLoad from 'react-lazy-load';
 import { get } from 'methodes/fetch';
 import useCtx from './Context';
-import { lset } from 'src/methodes/localStorage';
 
 function loadMoreSkins(skins: any, setSkins: any, ctx: any) {
     ctx?.setIsLoading(true);
