@@ -35,7 +35,7 @@ export default function LazzyScroll(
         const currentRef = ref.current;
         if (currentRef) {
             const handleScroll = () => {
-                if (currentRef.scrollTop + currentRef.clientHeight >= currentRef.scrollHeight) {
+                if (currentRef.scrollTop + currentRef.clientHeight >= currentRef.scrollHeight - 15) {
                     loadMoreSkins(skins, setSkins, ctx);
                 }
             };
@@ -46,7 +46,7 @@ export default function LazzyScroll(
         }
     }, [skins])
 
-    return <div ref={ref} className='h-full h-full overflow-y-auto flex flex-wrap gap-4 max-w-[600px]' >
+    return <div ref={ref} className='h-full h-full overflow-y-auto flex flex-wrap gap-4 max-w-[600px] max-h-[700px]' >
         {skins?.map(e =>
             <img
                 key={`k_sghsdgh_${e.identifier}`}

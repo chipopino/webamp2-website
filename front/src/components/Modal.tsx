@@ -12,13 +12,12 @@ export default function Modal(props: { children?: any }) {
         'opacity-100 transition-opacity duration-200',
         'z-[666] fixed w-screen h-screen',
         'flex flex-col items-center justify-center',
-        'max-w-[98vw] max-h-[80vh]'
     )} >
         <div
             onClick={() => ctx?.setModalContent?.(null)}
             className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
         />
-        <div className="z-10 bg-white p-4 rounded overflow-y-auto max-w-[97vw] max-h-[90vh]">
+        <div className="z-10 bg-white p-4 rounded overflow-y-auto max-w-[80vw] max-h-[90vh]">
             {ctx?.modalContent}
         </div>
     </ div >
