@@ -95,14 +95,14 @@ export default function Menu() {
     function downloadFile() {
         const tracks = lget('tracks');
         const skins = lget('skins');
-        const fin = JSON.stringify({tracks, skins});
+        const fin = JSON.stringify({ tracks, skins });
 
         const blob = new Blob([fin], { type: "text/plain" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "bacup.json";
         link.click();
-      }
+    }
 
 
     const skinBtns = {
@@ -132,6 +132,19 @@ export default function Menu() {
         },
     }
     const searchBtns = {
+        'search radio by tag': async () => {
+            const searchTerm = window.prompt('enter search term') || '';
+            if (searchTerm) {
+                post('searchRadioByTag', { searchTerm: 'punk' })
+                    .then(result => {
+                        const res = result as any;
+                        exec('setTraks', res.traks);
+                        lset('currentTracks', res.traks);
+                    })
+                    .catch(err => window.alert('bummer'))
+            }
+            ctx?.setModalContent(null);
+        },
         'search archives': () => {
             const searchTerm = window.prompt('enter search term') || '';
             if (searchTerm) {
@@ -145,29 +158,6 @@ export default function Menu() {
             }
             ctx?.setModalContent(null);
         },
-        'search radio by tag': async () => {
-            const searchTerm = window.prompt('enter search term') || '';
-            if (searchTerm) {
-                const tmp = await radioBrowser.getStationsBy(
-                    StationSearchType.byTag, searchTerm
-                ) || [];
-
-                const stations = tmp.map(e => {
-                    return {
-                        name: e.name,
-                        url: e.urlResolved,
-                        duration: 0,
-                        metaData: {
-                            artist: e.name,
-                            title: e.country,
-                        },
-                    }
-                });
-                exec('setTraks', stations);
-                lset('currentTracks', stations);
-            }
-            ctx?.setModalContent(null);
-        }
     }
 
     const saveBtns = {

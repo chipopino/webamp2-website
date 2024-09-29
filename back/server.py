@@ -3,8 +3,12 @@ from flask_cors import CORS
 import random
 import requests
 from searchArchives import searchIA
- 
+from pyradios import RadioBrowser
+
+rb = RadioBrowser()
+
 # https://archive.org/download/winampskin_Abandoned_Pools_Robot/Abandoned_Pools_-_Robot.wsz
+
 
 def get(url):
     try:
@@ -15,34 +19,52 @@ def get(url):
         return False
     except Exception as err:
         return False
-    
+
 
 app = Flask(__name__)
 
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
-@app.route('/randomSkin')
+
+@app.route("/randomSkin")
 def randomSkin():
-    identifier = ''
-    with open('out.txt', 'r') as file:
+    identifier = ""
+    with open("out.txt", "r") as file:
         file.seek(random.randint(0, file.seek(0, 2)))
         file.readline()
-        return {'skin': file.readline()}
+        return {"skin": file.readline()}
 
-@app.route('/searchIA', methods=['POST'])
+
+@app.route("/searchIA", methods=["POST"])
 def searchIArout():
     data = request.json
     return jsonify(searchIA(data))
 
 
-@app.route('/test', methods=['POST'])
+@app.route("/searchRadioByTag", methods=["POST"])
+def searchRadioByTag():
+    data = request.json
+    stations = rb.search(name=data["searchTerm"])
+    stations = [
+        {
+            "name": i['name'],
+            "url": i['url_resolved'],
+            "duration": 0,
+            "metaData": {
+                "artist": i['name'],
+                "title": i['country'],
+            },
+        }
+        for i in stations
+    ]
+    return {'traks': stations}
+
+
+@app.route("/test", methods=["POST"])
 def post_data():
     data = request.json
     return jsonify(data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(port=5000)
-
-
-
