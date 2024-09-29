@@ -146,7 +146,7 @@ export default function Menu() {
             const searchTerm = window.prompt('enter search term') || '';
             if (searchTerm) {
                 ctx?.setIsLoading?.(true);
-                post('searchRadioByTag', { searchTerm: 'punk' })
+                post('searchRadioByTag', { searchTerm })
                     .then(result => {
                         const res = result as any;
                         exec('setTraks', res.traks);
