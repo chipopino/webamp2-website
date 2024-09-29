@@ -46,7 +46,7 @@ export default function LazzyScroll(
         }
     }, [skins])
 
-    return <div ref={ref} className='h-full h-full overflow-y-auto flex flex-col gap-4' >
+    return <div ref={ref} className='h-full h-full overflow-y-auto flex flex-wrap gap-4 max-w-[600px]' >
         {skins?.map(e =>
             <img
                 key={`k_sghsdgh_${e.identifier}`}

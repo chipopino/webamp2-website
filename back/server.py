@@ -41,7 +41,9 @@ def randomSkins():
     fin = []
     for i in range(10):
         with open(f"./fin/{n+i}.json", "r") as file:
-            fin.append(json.loads(file.read()))
+            jso = json.loads(file.read())
+            jso["images"] = [i for i in jso["images"] if 'thumb' in i]
+            fin.append(jso)
     return {"skins": fin}
 
 
