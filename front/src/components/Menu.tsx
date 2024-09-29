@@ -145,6 +145,7 @@ export default function Menu() {
         'search radio by tag': async () => {
             const searchTerm = window.prompt('enter search term') || '';
             if (searchTerm) {
+                ctx?.setIsLoading?.(true);
                 post('searchRadioByTag', { searchTerm: 'punk' })
                     .then(result => {
                         const res = result as any;
@@ -152,12 +153,14 @@ export default function Menu() {
                         lset('currentTracks', res.traks);
                     })
                     .catch(err => window.alert('bummer'))
+                    .finally(() => ctx?.setIsLoading?.(false))
             }
             ctx?.setModalContent(null);
         },
         'search archives': () => {
             const searchTerm = window.prompt('enter search term') || '';
             if (searchTerm) {
+                ctx?.setIsLoading?.(true);
                 post('searchIA', searchTerm)
                     .then(result => {
                         const res = result as any;
@@ -165,6 +168,7 @@ export default function Menu() {
                         lset('currentTracks', res.traks);
                     })
                     .catch(err => window.alert('bummer'))
+                    .finally(() => ctx?.setIsLoading?.(false))
             }
             ctx?.setModalContent(null);
         },
@@ -239,15 +243,33 @@ export default function Menu() {
         }
 
         window.addEventListener("message", function (event) {
-            const { url } = event?.data || {};
-            if (url) {
-                try {
-                    //@ts-ignore
-                    const tmp = lget('currentTracks').filter(e => e.url === url);
-                    lset('currentTrack', tmp[0]);
-                } catch {
-                    window.alert('i like pie <3');
-                }
+            const { job, data } = event?.data;
+
+            switch (job) {
+                case 'trakChanged':
+                    const { url } = data || {};
+                    if (url) {
+                        try {
+                            //@ts-ignore
+                            const tmp = lget('currentTracks').filter(e => e.url === url);
+                            lset('currentTrack', tmp[0]);
+                        } catch {
+                            window.alert('i like pie <3');
+                        }
+                    }
+                    break;
+                case 'startLoading':
+                    console.log('startLoading');
+                    ctx?.setIsLoading?.(true);
+                    break;
+                case 'stopLoading':
+                    console.log('stopLoading');
+                    ctx?.setIsLoading?.(false);
+                    break;
+                case 'isLoaded':
+                    lset('currentTracks', lget('tracks'));
+                    exec('setTraks', lget('tracks'));
+                    break;
             }
         });
 

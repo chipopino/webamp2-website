@@ -8,6 +8,8 @@ interface contextType {
     isModalOpen: Boolean;
     modalContent: modalStateType;
     setModalContent: (content: ReactNode) => void;
+    isLoading: boolean;
+    setIsLoading: any;
 }
 
 // const Context = createContext<contextType>({
@@ -25,6 +27,7 @@ export function ContextPriveder({ children }: { children: ReactNode }) {
     const webamp = useRef();
     const [isModalOpen, setIsModalOpen] = useState<Boolean>(false);
     const [modalContent, _setModalContent] = useState<modalStateType>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const postMessage = useRef();
 
     function setModalContent(content: ReactNode) {
@@ -47,6 +50,8 @@ export function ContextPriveder({ children }: { children: ReactNode }) {
                 setModalContent,
                 webamp,
                 postMessage,
+                isLoading,
+                setIsLoading,
             }}
         >
             {children}

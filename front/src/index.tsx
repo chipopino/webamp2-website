@@ -4,12 +4,14 @@ import { ContextPriveder } from 'components/Context';
 import Webamp2 from 'components/Webamp2';
 import Menu from 'components/Menu';
 import Modal from 'components/Modal';
+import Loader from 'components/Loader';
 import './index.css';
 
 const App: React.FC = () => {
 
   return <div className='overflow-hidden w-full h-full flex flex-col'>
     <ContextPriveder>
+      <Loader />
       <Webamp2 />
       <Menu />
       <Modal />
