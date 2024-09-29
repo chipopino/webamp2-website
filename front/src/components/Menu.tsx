@@ -1,10 +1,9 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import useCtx from 'components/Context';
 import Btn from 'components/Btn';
-import { cn, jcompare } from 'methodes/global';
+import { cn, jcompare, uploadFile } from 'methodes/global';
 import { get, post } from 'methodes/fetch';
 import { larr, lget, lset } from 'methodes/localStorage';
-import { RadioBrowserApi, StationSearchType } from 'radio-browser-api'
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -62,7 +61,6 @@ function PickSkin({ skins, exec, close }:
 
 export default function Menu() {
     const ctx = useCtx();
-    const radioBrowser = new RadioBrowserApi('My Radio App')
 
     function exec(task: taskType, data: any) {
         const postMessage = ctx?.postMessage?.current;
@@ -175,7 +173,7 @@ export default function Menu() {
             exec('setTraks', lget('tracks'));
             ctx?.setModalContent(null);
         },
-        'delete trak': () => {
+        'delete current track': () => {
             try {
                 const tracks = lget('tracks');
                 const currentTrackUrl = lget('currentTrack').url;
@@ -192,6 +190,25 @@ export default function Menu() {
         },
         'export my stuff': () => {
             downloadFile();
+            ctx?.setModalContent(null);
+        },
+        'import my stuff': async () => {
+            uploadFile().then(result => {
+                try {
+                    //@ts-ignore
+                    const content = JSON.parse(result);
+                    const { tracks, skins } = content;
+                    if (!tracks || !skins) {
+                        window.alert('the file needs to contain a json object with "tracks" and "skins" but it doesn`t');
+                    } else {
+                        lset('skins', skins);
+                        lset('tracks', tracks);
+                    }
+                } catch (err) {
+                    window.alert('chicken butts ... probably not a file exported from here ... maybe devtools knows what happend');
+                    console.log("chicken butts: ", err);
+                }
+            })
             ctx?.setModalContent(null);
         },
     }
