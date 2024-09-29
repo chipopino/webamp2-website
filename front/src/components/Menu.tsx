@@ -133,6 +133,7 @@ export default function Menu() {
             if (skinName) {
                 lset('currentSkin', { name: skinName, url: skinUrl });
             }
+            ctx?.setModalContent(null);
         },
         'set this skin as default': () => {
             lset('defaultSkin', lget('currentSkin'));
