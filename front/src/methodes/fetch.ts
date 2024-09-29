@@ -3,7 +3,7 @@ import urlJoin from 'url-join';
 function bas_fetch(endpoint: string, data?: any, method = 'POST', headers = {}) {
     return new Promise((resolve, reject) => {
         fetch(
-            urlJoin('http://localhost:5000', endpoint),
+            urlJoin(process.env.BACK_URL || '', endpoint),
             {
                 method, headers,
                 body: method === 'POST' ? JSON.stringify(data) : undefined
