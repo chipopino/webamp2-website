@@ -7,8 +7,6 @@ from pyradios import RadioBrowser
 
 rb = RadioBrowser()
 
-# https://archive.org/download/winampskin_Abandoned_Pools_Robot/Abandoned_Pools_-_Robot.wsz
-
 
 def get(url):
     try:
@@ -47,17 +45,17 @@ def searchRadioByTag():
     stations = rb.search(name=data["searchTerm"])
     stations = [
         {
-            "name": i['name'],
-            "url": i['url_resolved'],
+            "name": i["name"],
+            "url": i["url_resolved"],
             "duration": 0,
             "metaData": {
-                "artist": i['name'],
-                "title": i['country'],
+                "artist": i["name"],
+                "title": i["country"],
             },
         }
         for i in stations
     ]
-    return {'traks': stations}
+    return {"traks": stations}
 
 
 @app.route("/test", methods=["POST"])

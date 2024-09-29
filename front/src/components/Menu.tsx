@@ -124,8 +124,20 @@ export default function Menu() {
                 );
             }
         },
+        'load skin from url': () => {
+            const skinUrl = window.prompt('skin url:');
+            if (skinUrl) {
+                exec('setRandomSkin', skinUrl);
+            }
+            const skinName = window.prompt('skin name (your chois):');
+            if (skinName) {
+                lset('currentSkin', { name: skinName, url: skinUrl });
+            }
+        },
         'set this skin as default': () => {
             lset('defaultSkin', lget('currentSkin'));
+            larr.push('skins', lget('currentSkin'));
+            larr.uniquefy('skins');
             ctx?.setModalContent(null);
         },
     }
