@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import useCtx from 'components/Context';
 import Btn from 'components/Btn';
-import { cn, jcompare, uploadFile } from 'methodes/global';
+import LazzyScroll from './LazyScroll';
+import { cn, uploadFile } from 'methodes/global';
 import { get, post } from 'methodes/fetch';
 import { larr, lget, lset } from 'methodes/localStorage';
 import SearchIcon from '@mui/icons-material/Search';
@@ -67,25 +68,16 @@ export default function Menu() {
         postMessage({ task, data }, '*');
     }
 
+    function setCurrentSkin(identifier: string, url: string) {
+        exec('setRandomSkin', url);
+        lset('currentSkin', { name: identifier, url });
+    }
+
     function getRandomSkin() {
         get('randomSkin')
-            .then(e => {
+            .then(result => {
                 //@ts-ignore
-                const skin: string = e.skin?.replace?.('\n', '');
-                exec('setRandomSkin', skin);
-                const match = skin.match(/(?<=\/\/).+(?=\.(wsz|zip))/);
-                if (match && match.length) {
-                    const tmp = match[0].split?.('/');
-                    if (tmp) {
-                        lset(
-                            'currentSkin',
-                            {
-                                name: tmp[tmp.length - 1]?.replace?.(/_/g, ''),
-                                url: skin
-                            }
-                        );
-                    }
-                }
+                setCurrentSkin(result.identifier, result.wsz);
             })
             .catch(err => window.alert('could not fetch skin'))
     }
@@ -107,6 +99,16 @@ export default function Menu() {
         'random skin': () => {
             getRandomSkin();
             ctx?.setModalContent(null);
+        },
+        'browse skins': () => {
+            ctx?.setModalContent(
+                <LazzyScroll
+                    onImgClick={(skin: any) => {
+                        setCurrentSkin(skin.identifier, skin.wsz);
+                        ctx.setModalContent(null);
+                    }}
+                />
+            )
         },
         'save skin': () => {
             larr.push('skins', lget('currentSkin'));

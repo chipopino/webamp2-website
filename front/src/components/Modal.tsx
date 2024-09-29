@@ -11,7 +11,8 @@ export default function Modal(props: { children?: any }) {
         !isOpen && 'pointer-events-none !opacity-0',
         'opacity-100 transition-opacity duration-200',
         'z-[666] fixed w-screen h-screen',
-        'flex flex-col items-center justify-center'
+        'flex flex-col items-center justify-center',
+        'max-w-[98vw] max-h-[80vh]'
     )} >
         <div
             onClick={() => ctx?.setModalContent?.(null)}

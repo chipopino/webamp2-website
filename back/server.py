@@ -2,9 +2,12 @@ from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
 import random
 import requests
+import json
 from searchArchives import searchIA
 from pyradios import RadioBrowser
+import random
 
+SKINS = 53060
 rb = RadioBrowser()
 
 
@@ -26,11 +29,20 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 @app.route("/randomSkin")
 def randomSkin():
-    identifier = ""
-    with open("out.txt", "r") as file:
-        file.seek(random.randint(0, file.seek(0, 2)))
-        file.readline()
-        return {"skin": file.readline()}
+    n = random.randint(0, SKINS - 1)
+    with open(f"./fin/{n}.json", "r") as file:
+        jso = json.loads(file.read())
+        return jso
+
+
+@app.route("/randomSkins")
+def randomSkins():
+    n = random.randint(0, SKINS - 11)
+    fin = []
+    for i in range(10):
+        with open(f"./fin/{n+i}.json", "r") as file:
+            fin.append(json.loads(file.read()))
+    return {"skins": fin}
 
 
 @app.route("/searchIA", methods=["POST"])
