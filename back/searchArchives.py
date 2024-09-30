@@ -56,7 +56,7 @@ def getDownlos(id, file):
 
 
 def is_audio_url(url):
-    return url.endswith((".mp3", ".wav", ".ogg", ".flac", ".m3u"))
+    return url.endswith((".mp3", ".m3u"))
 
 
 def searchIA(term):
@@ -75,13 +75,20 @@ def searchIA(term):
                         "duration": 0,
                         "metaData": {
                             "artist": f.get("artist") or "artist",
-                            "title": f.get("title") or "title",
+                            "title": f.get("name") or f.get("title") or "title",
                         },
                     }
                 )
             except:
                 print("POOP")
                 pass
+
+        traks = [
+            i
+            for i in traks
+            if is_audio_url(i["url"])
+        ]
+
         return {
             "title": docs.get("title") or "",
             "desc": docs.get("description") or "",
