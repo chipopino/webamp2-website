@@ -1,0 +1,18 @@
+.animated-background {
+    width: 100vw;  /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    background-image: url('stars.gif'); /* Replace with your image URL */
+    background-size: cover; /* Make the background twice the size */
+    background-repeat: no-repeat; /* Prevent repetition of the image */
+    animation: slide 300s linear infinite; /* Animation duration and behavior */
+}
+
+/* Define the animation */
+@keyframes slide {
+    from {
+        background-position: 0% 0%; /* Start at the left */
+    }
+    to {
+        background-position: 100% 0%; /* End at the right */
+    }
+}

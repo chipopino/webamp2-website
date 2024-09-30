@@ -262,11 +262,9 @@ export default function Menu() {
                     }
                     break;
                 case 'startLoading':
-                    console.log('startLoading');
                     ctx?.setIsLoading?.(true);
                     break;
                 case 'stopLoading':
-                    console.log('stopLoading');
                     ctx?.setIsLoading?.(false);
                     break;
                 case 'isLoaded':
